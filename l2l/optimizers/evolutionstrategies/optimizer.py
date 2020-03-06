@@ -174,6 +174,7 @@ class EvolutionStrategiesOptimizer(Optimizer):
         # entropy algorithm and thus needs to handle the optimizee individuals
         # as vectors
         self.current_perturbations = self._get_perturbations(traj)
+
         current_eval_pop_arr = (
             self.current_individual_arr + self.current_perturbations).tolist()
 
@@ -198,7 +199,7 @@ class EvolutionStrategiesOptimizer(Optimizer):
             traj.pop_size, traj.noise_std, traj.mirrored_sampling_enabled
 
         rand = self.random_state.randn(
-                                pop_size, *self.current_individual_arr.shape)
+            pop_size, *self.current_individual_arr.shape)
         perturbations = noise_std * rand
         if mirrored_sampling_enabled:
             return np.vstack((perturbations, -perturbations))
@@ -271,8 +272,8 @@ class EvolutionStrategiesOptimizer(Optimizer):
         # Documentation of algorithm parameters for the current generation
         #
         # generation          - The index of the evaluated generation
-        # best_fitness_in_run - The highest fitness among the individuals in the
-        #                       evaluated generation
+        # best_fitness_in_run - The highest fitness among the individuals in
+        #                       the evaluated generation
         # pop_size            - Population size
         generation_result_dict = {
             'generation': self.g,

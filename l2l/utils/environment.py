@@ -56,8 +56,6 @@ class Environment:
         self.logging = False
         self.enable_logging()
 
-
-
     def run(self, runfunc):
         """
         Runs the optimizees using either JUBE or sequential calls.
@@ -110,7 +108,7 @@ class Environment:
 
             # Add results to the trajectory
             self.trajectory.results.f_add_result_to_group(
-                                                "all_results", it, result[it])
+                "all_results", it, result[it])
             self.trajectory.current_results = result[it]
             self.trajectory.par['generation'] = it
 
