@@ -274,7 +274,7 @@ class GradientDescentOptimizer(Optimizer):
             'current_fitness': self.current_fitness,
             'best_fitness_in_run': sorted_fitness[0],
             'average_fitness_in_run': np.mean(sorted_fitness),
-	    'current_individual': curr_ind_dict,
+            'current_individual': curr_ind_dict,
         }
 
         generation_name = 'generation_{}'.format(self.g)
