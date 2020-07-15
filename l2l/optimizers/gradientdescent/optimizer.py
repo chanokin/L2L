@@ -264,13 +264,17 @@ class GradientDescentOptimizer(Optimizer):
         logger.info("  Current fitness is %.2f", self.current_fitness)
         logger.info('  Best Fitness: %.4f', sorted_fitness[0])
         logger.info("  Best individual is %s", sorted_population[0])
+	
+        curr_ind_dict =  list_to_dict(
+                    self.current_individual,
+                    self.optimizee_individual_dict_spec)
 
         generation_result_dict = {
             'generation': self.g,
             'current_fitness': self.current_fitness,
             'best_fitness_in_run': sorted_fitness[0],
             'average_fitness_in_run': np.mean(sorted_fitness),
-	    'current_individual': self.current_individual,
+	    'current_individual': curr_ind_dict,
         }
 
         generation_name = 'generation_{}'.format(self.g)
