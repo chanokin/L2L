@@ -85,9 +85,9 @@ class GridSearchOptimizer(Optimizer):
         for param_name, param_type, param_length in optimizee_individual_param_spec:
             param_lower_bound, param_upper_bound, param_n_steps = optimizee_param_grid[param_name]
             if param_type == DictEntryType.Scalar:
-                self.param_list[param_name] = np.linspace(param_lower_bound, param_upper_bound, param_n_steps + 1)
+                self.param_list[param_name] = np.linspace(param_lower_bound, param_upper_bound, param_n_steps)
             elif param_type == DictEntryType.Sequence:
-                curr_param_list = np.linspace(param_lower_bound, param_upper_bound, param_n_steps + 1)
+                curr_param_list = np.linspace(param_lower_bound, param_upper_bound, param_n_steps)
                 curr_param_list = np.meshgrid(*([curr_param_list] * param_length), indexing='ij')
                 curr_param_list = [x.ravel() for x in curr_param_list]
                 curr_param_list = np.stack(curr_param_list, axis=-1)
@@ -96,17 +96,29 @@ class GridSearchOptimizer(Optimizer):
         self.param_list = cartesian_product(self.param_list, tuple(sorted(optimizee_param_grid.keys())))
 
         # Adding the bounds information to the trajectory
-        traj.parameters.f_add_parameter_group('grid_spec')
+        traj.f_add_parameter_group('grid_spec')
         for param_name, param_grid_spec in optimizee_param_grid.items():
-            traj.parameters.grid_spec.f_add_parameter(param_name + '.lower_bound', )
+            traj.f_add_parameter_to_group('grid_spec', param_name + '.lower_bound', param_grid_spec[0])
+            traj.f_add_parameter_to_group('grid_spec', param_name + '.upper_bound', param_grid_spec[1])
+            traj.f_add_parameter_to_group('grid_spec', param_name + '.step', param_grid_spec[2])
 
         # Expanding the trajectory
         self.param_list = {('individual.' + key): value for key, value in self.param_list.items()}
+        k0 = list(self.param_list.keys())[0]
+        self.param_list['generation'] = [0]
+        self.param_list['ind_idx'] = np.arange(len(self.param_list[k0]))
+
         traj.f_expand(self.param_list)
+        traj.par['n_iteration'] = 1
         #: The current generation number
         self.g = 0
         #: The population (i.e. list of individuals) to be evaluated at the next iteration
-        self.eval_pop = None
+        self.eval_pop = None # self.param_list
+        # Storing the fitness of the current individual
+        self.current_fitness = -np.Inf
+        self.traj = traj
+
+        # self._expand_trajectory(traj)
 
     def post_process(self, traj, fitnesses_results):
         """
