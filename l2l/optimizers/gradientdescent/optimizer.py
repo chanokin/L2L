@@ -127,18 +127,17 @@ class GradientDescentOptimizer(Optimizer):
 
         _, self.optimizee_individual_dict_spec = dict_to_list(
             self.optimizee_create_individual(), get_dict_spec=True)
-        self.random_state = np.random.RandomState(seed=traj.par.seed)
 
-        if isinstance(parameters.exploration_step_size, dict):
-            parameters.exploration_step_size = (
-                dict_to_list(parameters.exploration_step_size)
-            )
+        exploration_step_size = parameters.exploration_step_size
+        if isinstance(exploration_step_size, dict):
+            exploration_step_size = dict_to_list(exploration_step_size)
+
 
 
         traj.f_add_parameter('learning_rate', parameters.learning_rate,
                              comment='Value of learning rate')
         traj.f_add_parameter('exploration_step_size',
-                             parameters.exploration_step_size,
+                             exploration_step_size,
                              comment='Standard deviation of the random steps')
         traj.f_add_parameter('n_random_steps', parameters.n_random_steps,
                              comment='Amount of random steps taken for '
@@ -150,6 +149,7 @@ class GradientDescentOptimizer(Optimizer):
         traj.f_add_parameter('seed', np.uint32(parameters.seed),
                              comment='Optimizer random seed')
 
+        self.random_state = np.random.RandomState(seed=traj.par.seed)
 
 
         # Note that this array stores individuals as an np.array of floats as
@@ -191,7 +191,7 @@ class GradientDescentOptimizer(Optimizer):
             list_to_dict((self.current_individual +
                           self.random_state.normal(
                               0.0,
-                              parameters.exploration_step_size,
+                              exploration_step_size,
                               self.current_individual.size)).tolist(),
                          self.optimizee_individual_dict_spec)
             for _ in range(parameters.n_random_steps)
