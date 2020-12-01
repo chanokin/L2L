@@ -125,6 +125,16 @@ class GradientDescentOptimizer(Optimizer):
 
         self.optimizee_bounding_func = optimizee_bounding_func
 
+        _, self.optimizee_individual_dict_spec = dict_to_list(
+            self.optimizee_create_individual(), get_dict_spec=True)
+        self.random_state = np.random.RandomState(seed=traj.par.seed)
+
+        if isinstance(parameters.exploration_step_size, dict):
+            parameters.exploration_step_size = (
+                dict_to_list(parameters.exploration_step_size)
+            )
+
+
         traj.f_add_parameter('learning_rate', parameters.learning_rate,
                              comment='Value of learning rate')
         traj.f_add_parameter('exploration_step_size',
@@ -140,9 +150,7 @@ class GradientDescentOptimizer(Optimizer):
         traj.f_add_parameter('seed', np.uint32(parameters.seed),
                              comment='Optimizer random seed')
 
-        _, self.optimizee_individual_dict_spec = dict_to_list(
-            self.optimizee_create_individual(), get_dict_spec=True)
-        self.random_state = np.random.RandomState(seed=traj.par.seed)
+
 
         # Note that this array stores individuals as an np.array of floats as
         # opposed to Individual-Dicts
