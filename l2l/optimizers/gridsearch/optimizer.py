@@ -139,16 +139,20 @@ class GridSearchOptimizer(Optimizer):
         logger.info('Storing Results')
         logger.info('---------------')
 
-        for run_idx, run_fitness, run_weighted_fitness in zip(run_idx_array, fitness_array, weighted_fitness_array):
+        for i, (run_idx, run_fitness, run_weighted_fitness) in \
+                enumerate(zip(run_idx_array, fitness_array, weighted_fitness_array)):
+
             traj.v_idx = run_idx
-            traj.results.f_add_result('$set.$.fitness', np.array(run_fitness))
-            traj.results.f_add_result('$set.$.weighted_fitness', run_weighted_fitness)
+            traj.f_add_result('$set.$.individual', i)
+            traj.f_add_result('$set.$.fitness', np.array(run_fitness))
+            
+            traj.f_add_result('$set.$.weighted_fitness', run_weighted_fitness)
 
         logger.info('Best Individual is:')
         logger.info('')
 
         traj.v_idx = run_idx_array[max_fitness_indiv_index]
-        individual = traj.par.individual
+        individual = traj.individuals[self.g][max_fitness_indiv_index]
         self.best_individual = {}
         for param_name, _, _ in self.optimizee_individual_dict_spec:
             logger.info('  %s: %s', param_name, individual[param_name])
